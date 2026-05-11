@@ -11,7 +11,7 @@ const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID'            // e.g. 'service_abc123
 const CLIENT_TEMPLATE_ID  = 'YOUR_CLIENT_TEMPLATE_ID'   // confirmation to lead
 const OWNER_TEMPLATE_ID   = 'YOUR_OWNER_TEMPLATE_ID'    // notification to business
 
-const OWNER_EMAIL = 'owner@desertcoolhvac.com'
+const OWNER_EMAIL = 'demo@desertcoolhvac.com'
 
 export async function sendConfirmationEmail(lead) {
   try {

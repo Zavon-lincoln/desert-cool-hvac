@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { Wind, Thermometer, Wrench, Clock, Star, Phone, Mail, MapPin, ChevronRight, Shield, Award, Zap, CheckCircle, X } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Wind, Thermometer, Wrench, Clock, Star, Phone, Mail, MapPin, ChevronRight, Shield, Award, Zap, CheckCircle, X, ArrowRight } from 'lucide-react'
 import { saveLead } from '../utils/storage'
 import { sendConfirmationEmail, sendOwnerNotification } from '../utils/email'
 
@@ -8,13 +8,6 @@ const SERVICES = [
   { icon: <Thermometer size={28} />, title: 'AC Installation', desc: 'New system? We size, install, and commission your unit — backed by a 5-year labor warranty.' },
   { icon: <Wrench size={28} />, title: 'Heating Systems', desc: 'Furnace, heat pump, or mini-split — full repair and installation for all heating systems.' },
   { icon: <Clock size={28} />, title: '24/7 Emergency', desc: 'Las Vegas heat doesn\'t wait. Neither do we. Emergency response within 2 hours, guaranteed.' },
-]
-
-const STATS = [
-  { value: '4,800+', label: 'Happy Customers' },
-  { value: '15 Yrs', label: 'In Business' },
-  { value: '< 2 Hr', label: 'Emergency Response' },
-  { value: '4.9★', label: 'Google Rating' },
 ]
 
 const TESTIMONIALS = [
@@ -28,7 +21,7 @@ const FORM_SERVICES = ['AC Repair', 'AC Installation', 'Heating Repair', 'Heatin
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm anim-slide-down">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
@@ -55,7 +48,7 @@ function Navbar() {
           </button>
         </div>
         {menuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100 flex flex-col gap-3">
+          <div className="md:hidden py-4 border-t border-gray-100 flex flex-col gap-3 anim-fade-in">
             {['Services', 'About', 'Reviews', 'Contact'].map(item => (
               <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}
                 className="text-sm font-medium text-gray-700 px-2 py-1">{item}</a>
@@ -69,30 +62,55 @@ function Navbar() {
 }
 
 function Hero() {
+  const statsRef = useRef(null)
+  const statsStarted = useRef(false)
+  const [customers, setCustomers] = useState(0)
+  const [years, setYears] = useState(0)
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !statsStarted.current) {
+        statsStarted.current = true
+        const steps = 80; let i = 0
+        const t = setInterval(() => {
+          i++
+          const p = 1 - Math.pow(1 - i / steps, 3)
+          setCustomers(Math.round(4800 * p))
+          setYears(Math.round(15 * p))
+          if (i >= steps) clearInterval(t)
+        }, 1800 / steps)
+      }
+    }, { threshold: 0.3 })
+    if (statsRef.current) obs.observe(statsRef.current)
+    return () => obs.disconnect()
+  }, [])
+
   return (
     <section className="relative min-h-screen flex items-center bg-brand-dark overflow-hidden">
-      {/* Background pattern */}
       <div className="absolute inset-0 opacity-5"
         style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '32px 32px' }} />
       <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-brand-orange/10 to-transparent" />
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-brand-orange/5 rounded-full blur-3xl" />
+      {/* Floating decorative element */}
+      <div className="absolute right-12 top-1/3 w-48 h-48 rounded-full border border-brand-orange/10 anim-float hidden lg:block" />
+      <div className="absolute right-24 top-1/3 translate-y-8 w-24 h-24 rounded-full border border-brand-orange/15 anim-float hidden lg:block" style={{ animationDelay: '0.8s' }} />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 bg-brand-orange/10 border border-brand-orange/20 rounded-full px-4 py-2 mb-6">
+          <div className="inline-flex items-center gap-2 bg-brand-orange/10 border border-brand-orange/20 rounded-full px-4 py-2 mb-6 anim-fade-up delay-1">
             <div className="w-2 h-2 bg-brand-orange rounded-full animate-pulse" />
             <span className="text-brand-orange text-sm font-semibold">24/7 Emergency Service Available</span>
           </div>
-          <h1 className="font-display text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+          <h1 className="font-display text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6 anim-fade-up delay-2">
             Las Vegas's<br />
             <span className="text-brand-orange">HVAC Experts</span><br />
             You Can Trust.
           </h1>
-          <p className="text-lg text-gray-400 mb-8 leading-relaxed max-w-xl">
+          <p className="text-lg text-gray-400 mb-8 leading-relaxed max-w-xl anim-fade-up delay-3">
             When the desert heat hits 115°, your AC isn't optional. Desert Cool HVAC delivers
             fast, honest service across the entire Las Vegas valley — same-day repairs guaranteed.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 mb-12 anim-fade-up delay-4">
             <a href="#book" className="btn-primary text-base">
               Book Service <ChevronRight size={18} />
             </a>
@@ -100,13 +118,23 @@ function Hero() {
               <Phone size={18} /> (702) 555-0192
             </a>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-            {STATS.map(s => (
-              <div key={s.label}>
-                <div className="text-2xl font-display font-bold text-brand-orange">{s.value}</div>
-                <div className="text-sm text-gray-500 mt-0.5">{s.label}</div>
-              </div>
-            ))}
+          <div ref={statsRef} className="grid grid-cols-2 sm:grid-cols-4 gap-6 anim-fade-up delay-5">
+            <div>
+              <div className="text-2xl font-display font-bold text-brand-orange">{customers.toLocaleString()}+</div>
+              <div className="text-sm text-gray-500 mt-0.5">Happy Customers</div>
+            </div>
+            <div>
+              <div className="text-2xl font-display font-bold text-brand-orange">{years} Yrs</div>
+              <div className="text-sm text-gray-500 mt-0.5">In Business</div>
+            </div>
+            <div>
+              <div className="text-2xl font-display font-bold text-brand-orange">&lt; 2 Hr</div>
+              <div className="text-sm text-gray-500 mt-0.5">Emergency Response</div>
+            </div>
+            <div>
+              <div className="text-2xl font-display font-bold text-brand-orange">4.9★</div>
+              <div className="text-sm text-gray-500 mt-0.5">Google Rating</div>
+            </div>
           </div>
         </div>
       </div>
@@ -114,23 +142,31 @@ function Hero() {
   )
 }
 
-function Services() {
+function Services({ onServiceClick }) {
   return (
     <section id="services" className="py-24 bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 reveal">
           <p className="section-label mb-3">What We Do</p>
           <h2 className="font-display text-4xl font-bold text-brand-dark mb-4">Full-Service HVAC Solutions</h2>
           <p className="text-gray-500 max-w-xl mx-auto">From emergency repairs to new system installations, our licensed technicians handle it all — backed by solid warranties.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SERVICES.map(s => (
-            <div key={s.title} className="card group hover:border-brand-orange/30">
+          {SERVICES.map((s, i) => (
+            <div
+              key={s.title}
+              className="card group cursor-pointer reveal hover:-translate-y-2 hover:shadow-xl hover:shadow-brand-orange/15 hover:border-brand-orange/30"
+              style={{ transitionDelay: `${i * 0.12}s` }}
+              onClick={() => onServiceClick(s.title)}
+            >
               <div className="w-14 h-14 bg-brand-orange/10 rounded-xl flex items-center justify-center text-brand-orange mb-5 group-hover:bg-brand-orange group-hover:text-white transition-all duration-200">
                 {s.icon}
               </div>
               <h3 className="font-display font-bold text-lg text-brand-dark mb-2">{s.title}</h3>
               <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
+              <p className="mt-4 text-brand-orange text-sm font-semibold flex items-center gap-1 opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                Book Now <ArrowRight className="w-3.5 h-3.5" />
+              </p>
             </div>
           ))}
         </div>
@@ -144,7 +180,7 @@ function About() {
     <section id="about" className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
+          <div className="reveal">
             <p className="section-label mb-3">Why Desert Cool</p>
             <h2 className="font-display text-4xl font-bold text-brand-dark mb-6">
               Built for Las Vegas.<br />Built to Last.
@@ -171,14 +207,14 @@ function About() {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 reveal" style={{ transitionDelay: '0.15s' }}>
             {[
               { icon: <Shield size={24} />, title: 'Licensed & Insured', sub: 'Full NV certification' },
               { icon: <Award size={24} />, title: 'BBB A+ Rated', sub: '15 years of trust' },
               { icon: <Zap size={24} />, title: 'Same-Day Service', sub: 'Call by noon, done today' },
               { icon: <Star size={24} />, title: '4.9★ Google', sub: '700+ reviews' },
             ].map(item => (
-              <div key={item.title} className="bg-brand-dark rounded-2xl p-6 text-white">
+              <div key={item.title} className="bg-brand-dark rounded-2xl p-6 text-white hover:-translate-y-1 transition-transform duration-300">
                 <div className="text-brand-orange mb-3">{item.icon}</div>
                 <div className="font-display font-bold text-base mb-1">{item.title}</div>
                 <div className="text-gray-400 text-sm">{item.sub}</div>
@@ -195,15 +231,15 @@ function Reviews() {
   return (
     <section id="reviews" className="py-24 bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 reveal">
           <p className="section-label mb-3">Customer Reviews</p>
           <h2 className="font-display text-4xl font-bold text-brand-dark">What Our Customers Say</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map(t => (
-            <div key={t.name} className="card">
+          {TESTIMONIALS.map((t, i) => (
+            <div key={t.name} className="card reveal hover:-translate-y-1 hover:shadow-lg transition-all duration-300" style={{ transitionDelay: `${i * 0.12}s` }}>
               <div className="flex text-yellow-400 mb-4">
-                {Array.from({ length: t.stars }).map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+                {Array.from({ length: t.stars }).map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
               </div>
               <p className="text-gray-600 text-sm leading-relaxed mb-5 italic">"{t.text}"</p>
               <div>
@@ -218,10 +254,17 @@ function Reviews() {
   )
 }
 
-function BookingForm() {
+function BookingForm({ preselect = '' }) {
   const [form, setForm] = useState({ name: '', phone: '', email: '', service: '', preferredDate: '', preferredTime: '', notes: '' })
-  const [status, setStatus] = useState('idle') // idle | loading | success | error
+  const [status, setStatus] = useState('idle')
   const formRef = useRef(null)
+
+  useEffect(() => {
+    if (preselect) {
+      setForm(f => ({ ...f, service: preselect }))
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [preselect])
 
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
 
@@ -239,7 +282,7 @@ function BookingForm() {
   }
 
   return (
-    <section id="book" className="py-24 bg-white">
+    <section id="book" className="py-24 bg-white reveal">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-5 gap-12 items-start">
           <div className="lg:col-span-2">
@@ -249,7 +292,7 @@ function BookingForm() {
             <div className="space-y-5">
               {[
                 [<Phone size={18} />, '(702) 555-0192'],
-                [<Mail size={18} />, 'service@desertcoolhvac.com'],
+                [<Mail size={18} />, 'demo@desertcoolhvac.com'],
                 [<MapPin size={18} />, 'Serving All of Las Vegas Valley'],
                 [<Clock size={18} />, 'Mon–Fri 7am–7pm · Sat 8am–5pm · 24/7 Emergency'],
               ].map(([icon, text], i) => (
@@ -261,7 +304,7 @@ function BookingForm() {
             </div>
           </div>
 
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3" ref={formRef}>
             {status === 'success' ? (
               <div className="bg-green-50 border border-green-200 rounded-2xl p-10 text-center">
                 <CheckCircle size={48} className="text-green-500 mx-auto mb-4" />
@@ -270,7 +313,7 @@ function BookingForm() {
                 <button onClick={() => setStatus('idle')} className="mt-6 btn-primary">Book Another Service</button>
               </div>
             ) : (
-              <form ref={formRef} onSubmit={handleSubmit} className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
+              <form onSubmit={handleSubmit} className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
                 <div className="grid sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Full Name *</label>
@@ -352,7 +395,7 @@ function Footer() {
             <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wide">Contact</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2"><Phone size={14} className="text-brand-orange" /> (702) 555-0192</li>
-              <li className="flex items-center gap-2"><Mail size={14} className="text-brand-orange" /> service@desertcoolhvac.com</li>
+              <li className="flex items-center gap-2"><Mail size={14} className="text-brand-orange" /> demo@desertcoolhvac.com</li>
               <li className="flex items-center gap-2"><MapPin size={14} className="text-brand-orange" /> Las Vegas, NV</li>
             </ul>
           </div>
@@ -367,15 +410,33 @@ function Footer() {
 }
 
 export default function Home() {
+  const [preselectService, setPreselectService] = useState('')
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('in-view'); obs.unobserve(e.target) }
+      }),
+      { threshold: 0.1 }
+    )
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+    return () => obs.disconnect()
+  }, [])
+
+  const handleServiceClick = (serviceName) => {
+    setPreselectService(serviceName)
+    document.getElementById('book')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <>
       <Navbar />
       <main>
         <Hero />
-        <Services />
+        <Services onServiceClick={handleServiceClick} />
         <About />
         <Reviews />
-        <BookingForm />
+        <BookingForm preselect={preselectService} />
       </main>
       <Footer />
     </>
